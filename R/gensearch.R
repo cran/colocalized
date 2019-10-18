@@ -287,13 +287,17 @@ colocalized_sequential<-function(choose,chr,n){
 
   if (length(TF.binding.sites)==2){
     colocalized.special<-onedim_dist(TF.binding.sites[[1]],TF.binding.sites[[2]],n)
+    if(dim(which(colocalized.special==1,arr.ind=TRUE))[1]==0){
+      NULL
+    }
 
+    else{
     locations.special<-sapply(1:length(which(colocalized.special==1,arr.ind=TRUE)[,1]), function(i) TF.binding.sites[[1]][which(colocalized.special==1,arr.ind = TRUE)[i,1],2])
 
     collect.special<-sapply(1:length(locations.special), function(i) sapply(1:length(TF.binding.sites), function(j) if(as.character(TF.binding.sites[[j]][1,4])!=as.character(TF.binding.sites[[1]][1,4])|j==1) TF.binding.sites[[j]][which(abs(TF.binding.sites[[j]][,3]-locations.special[i])==min(abs(TF.binding.sites[[j]][,3]-locations.special[i]))),] else TF.binding.sites[[j]][which(abs(TF.binding.sites[[j]][,3]-locations.special[i])==sort(abs(TF.binding.sites[[j]][,3]-locations.special[i]))[j]),]))
     collect.special
   }
-
+}
 
 
 
@@ -378,10 +382,13 @@ colocalized_sequential<-function(choose,chr,n){
             same[[j]]<-which(unlist(collect[[i]][[k]][7,])==unique(unlist(collect[[i]][[k]][7,]))[j])
 
             if (length(same[[j]])>1){
-
+              p<-1
               for (y in 2:length(same[[j]])){
-                collect[[i]][[k]][,same[[j]][y]]<-as.character(TF.binding.sites[[same[[j]][1]]][which(abs(TF.binding.sites[[same[[j]][1]]][,3]-address[[i]][k])==sort(abs(TF.binding.sites[[same[[j]][1]]][,3]-address[[i]][k]))[y])[1],])
-              }
+                q<-as.numeric(duplicated(sort(abs(TF.binding.sites[[same[[j]][1]]][,3]-address[[i]][k]))[1:length(same[[j]])])[y])
+                p<-p+q
+                collect[[i]][[k]][,same[[j]][y]]<-as.character(TF.binding.sites[[same[[j]][1]]][which(abs(TF.binding.sites[[same[[j]][1]]][,3]-address[[i]][k])==sort(abs(TF.binding.sites[[same[[j]][1]]][,3]-address[[i]][k]))[y])[p][1],])
+
+                }
             }
           }
         }
@@ -404,6 +411,7 @@ colocalized_sequential<-function(choose,chr,n){
     collect<-lapply(1:length(collect), function(i) lapply(1:length(collect[[i]]), function(j) Reduce(rbind,collect[[i]][[j]])))
     collect<-lapply(1:length(collect), function(i) Reduce(cbind,collect[[i]]))
     collect
+
     }
   }
 }

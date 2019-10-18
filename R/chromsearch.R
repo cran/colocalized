@@ -18,7 +18,12 @@
 chromsearch<-function(choose,n,chrom){
   tin<-choose
   ChromOutput<-colocalized(tin,chrom,n)
-  raw_matrix<-Reduce(cbind,ChromOutput)[c(1,2,3,4,7,10,11,12,15,18,19,20,23),]
+  if (class(ChromOutput)=="matrix"){
+    t(ChromOutput)
+  }
+
+  else{
+  raw_matrix<-Reduce(cbind,ChromOutput)[c(1,2,3,4,6,7,10,11,12,14,15,18,19,20,22,23),]
   if (is.null(raw_matrix)){
     OutputTable<-NULL
     OutputTable
@@ -50,7 +55,7 @@ chromsearch<-function(choose,n,chrom){
     flip<-flip[1,which(!is.na(flip[1,]))]
 
     if (length(flip)>0){
-      flipped<-cbind(leave,sapply(0:(length(flip)/24-1), function(i) flip[c(1,2,3,4,7,10,11,12,15,18,19,20,23)+24*i]))
+      flipped<-cbind(leave,sapply(0:(length(flip)/24-1), function(i) flip[c(1,2,3,4,6,7,10,11,12,14,15,18,19,20,22,23)+24*i]))
 
       finaltrim<-sapply(1:length(unique(flipped[1,])), function(i) UniqueColumns(flipped[,which(flipped[1,]==unique(flipped[1,])[i])]))
       OutputTable<-t(Reduce(cbind,finaltrim))
@@ -61,8 +66,8 @@ chromsearch<-function(choose,n,chrom){
 
     else{
     t(UniqueColumns(raw_matrix))
+      }
     }
   }
 }
-
 
